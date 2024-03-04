@@ -64,9 +64,15 @@ function updatePlot() {
 function plotTimeSeries(data, selectedState, selectedCrime) {
   const filteredData = data.filter(entry => entry.state_abbr === selectedState);
 
-  const margin = { top: 50, right: 60, bottom: 100, left: 60 }; // Increased right margin
-  const width = 1500 - margin.left - margin.right;
-  const height = 600 - margin.top - margin.bottom;
+  // Determine the dimensions based on the available space
+const margin = { top: 50, right: 60, bottom: 100, left: 60 }; // Increased right margin
+const availableWidth = window.innerWidth - margin.left - margin.right;
+const availableHeight = window.innerHeight - margin.top - margin.bottom;
+
+// Calculate a reasonable width and height based on the available space
+const width = Math.min(availableWidth, 1500); // Adjust the maximum width as needed
+const height = Math.min(availableHeight, 600); // Adjust the maximum height as needed
+
 
   const svg = d3.select('#timeSeriesChart')
     .html('') // Clear previous content
