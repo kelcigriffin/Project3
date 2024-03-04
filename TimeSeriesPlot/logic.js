@@ -65,8 +65,8 @@ function plotTimeSeries(data, selectedState, selectedCrime) {
   const filteredData = data.filter(entry => entry.state_abbr === selectedState);
 
   const margin = { top: 50, right: 60, bottom: 100, left: 60 }; // Increased right margin
-  const width = 650 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
+  const width = 1500 - margin.left - margin.right;
+  const height = 600 - margin.top - margin.bottom;
 
   const svg = d3.select('#timeSeriesChart')
     .html('') // Clear previous content
@@ -114,7 +114,7 @@ function plotTimeSeries(data, selectedState, selectedCrime) {
 
   // Create legend
   const legend = svg.append('g')
-    .attr('transform', `translate(${width - 325},${310})`);
+    .attr('transform', `translate(${width - 225},${410})`);
 
   legend.append('path')
     .attr('d', d3.line()([[0, 0], [30, 0]])) // Crime line
