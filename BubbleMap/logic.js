@@ -126,36 +126,54 @@ function updateMap() {
     const maxCrimeRate = d3.max(filteredData, d => d[selectedCrime]);
 
     // Loop through the filtered data
-    filteredData.forEach(entry => {
-      const crimeRate = entry[selectedCrime];
+filteredData.forEach(entry => {
+  const crimeRate = entry[selectedCrime];
 
-      // Check if coordinates are defined
-      if (entry.latitude !== undefined && entry.longitude !== undefined) {
-        // Calculate combined score based on crime rate
-        const combinedScore = crimeRate / maxCrimeRate;
+  // Check if coordinates are defined
+  if (entry.latitude !== undefined && entry.longitude !== undefined) {
+    // Calculate combined score based on crime rate
+    const combinedScore = crimeRate / maxCrimeRate;
 
-        // Create a circle marker for each data point
-        const circle = L.circleMarker([entry.latitude, entry.longitude], {
-          radius: Math.sqrt(entry.Population) * 0.02, // Adjust the scaling factor as needed
-          color: `rgba(0, 0, 255, ${combinedScore})`, // Adjust color based on combined score
-          fillColor: `rgba(0, 0, 255, ${combinedScore})`,
-          fillOpacity: 0.5,
-        });
+    // Format crime rate with commas and round to two decimal places with percentage symbol
+const formattedCrimeRate = (crimeRate / 100).toLocaleString('en-US', {
+  style: 'percent',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
 
-        // Bind a popup with information
-        circle.bindPopup(`
-          <strong>${entry.state_abbr}</strong><br>
-          Population: ${entry.Population}<br>
-          ${selectedCrime} Rate: ${crimeRate}<br>
-          Unemployment Rate: ${entry.Unemployment_Rate}
-        `);
+// Format unemployment rate with commas and round to two decimal places with percentage symbol
+const formattedUnemploymentRate = (entry.Unemployment_Rate / 100).toLocaleString('en-US', {
+  style: 'percent',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
 
-        // Add the circle marker to the map
-        circle.addTo(map);
-      } else {
-        console.warn('Skipping entry with undefined coordinates:', entry);
-      }
+    // Format population with commas
+    const formattedPopulation = entry.Population.toLocaleString('en-US');
+
+    // Create a circle marker for each data point
+    const circle = L.circleMarker([entry.latitude, entry.longitude], {
+      radius: Math.sqrt(entry.Population) * 0.008, // Adjust the scaling factor as needed
+      color: `rgba(0, 0, 255, ${combinedScore})`, // Adjust color based on combined score
+      fillColor: `rgba(0, 0, 255, ${combinedScore})`,
+      fillOpacity: 0.5,
     });
+
+   // Bind a popup with information
+   circle.bindPopup(`
+   <strong>${entry.state_abbr}</strong><br>
+   Population: ${entry.Population.toLocaleString()}<br>
+   ${selectedCrime.replace('_rate', '')} Rate: ${formattedCrimeRate}<br>
+   Unemployment Rate: ${formattedUnemploymentRate}
+ `);
+
+    // Add the circle marker to the map
+    circle.addTo(map);
+  } else {
+    console.warn('Skipping entry with undefined coordinates:', entry);
+  }
+});
+
   } catch (error) {
     console.error('Error processing GeoJSON data:', error);
   }
@@ -163,157 +181,3 @@ function updateMap() {
 
 
 
-// let data; // Declare the data variable in a higher scope
-// let map; // Declare the map variable in a higher scope
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   fetchDataAndInitialize();
-// });
-
-// async function fetchDataAndInitialize() {
-//   try {
-//     const response = await fetch('../Visualizations/Data/population_crime_rate_unemployment_rate.json');
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-
-//     data = await response.json();
-
-//     if (!Array.isArray(data)) {
-//       throw new Error('Invalid JSON format');
-//     }
-
-//     initializeDropdowns(data);
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// }
-
-// function initializeDropdowns(data) {
-//   // Initialize Leaflet map only if it's not already defined
-//   if (!map) {
-//     map = L.map('map').setView([37.8, -96], 4);
-
-//     // Add a tile layer (OpenStreetMap as an example)
-//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//       attribution: '© OpenStreetMap contributors',
-//     }).addTo(map);
-//   }
-  
-//     // Extract unique crimes and years
-//     const uniqueCrimes = Object.keys(data[0]).filter(key => key.endsWith('_rate'));
-//     const uniqueYears = Array.from(new Set(data.map(entry => entry.data_year)));
-  
-//     // Populate crime dropdown
-//     uniqueCrimes.forEach(crime => {
-//       const option = document.createElement('option');
-//       option.value = crime;
-//       option.textContent = crime.replace('_rate', ''); // Display without '_rate'
-//       crimeSelector.appendChild(option);
-//     });
-  
-//     // Populate year dropdown
-//     uniqueYears.forEach(year => {
-//       const option = document.createElement('option');
-//       option.value = year;
-//       option.textContent = year;
-//       yearSelector.appendChild(option);
-//     });
-  
-//     // Add event listeners to dropdowns for updating the map
-//     crimeSelector.addEventListener('change', updateMap);
-//     yearSelector.addEventListener('change', updateMap);
-  
-//     // Initial map rendering
-//     updateMap();
-//   }
-  
-// function updateMap() {
-//     const selectedCrime = d3.select('#crimeSelector').node().value;
-//     const selectedYear = d3.select('#yearSelector').node().value;
-  
-
-//     console.log('Selected Crime:', selectedCrime);
-//     console.log('Selected Year:', selectedYear);
-
-
-//     // Check if selectedCrime and selectedYear are valid
-//     if (!selectedCrime || !selectedYear) {
-//         console.error('Please select both crime type and year.');
-//         return;
-//     }
-
-//     // Filter your data based on selectedCrime and selectedYear
-//     const filteredData = data.filter(
-//         d => d[selectedCrime] !== undefined && d.data_year === +selectedYear
-//     );
-
-//     // Check if data is found for the selected crime and year
-//     if (filteredData.length === 0) {
-//         console.warn('No data found for the selected crime and year.');
-//         return;
-//     }
-// }
-
-// function plotBubbleMap(data, selectedCrime, selectedYear) {
-//     // Clear previous markers
-//     map.eachLayer(layer => {
-//       if (layer instanceof L.Marker) {
-//         layer.remove();
-//       }
-//     });
-
-//     console.log('Filtered Data:', data); // Log the filtered data to the console
-  
-//     // Filter data based on selectedCrime and selectedYear
-//     const filteredData = data.filter(
-//       d => d[selectedCrime] !== undefined && d.data_year === +selectedYear
-//     );
-
-//     console.log('Filtered Data after filtering:', filteredData); // Log the filtered data after filtering
-  
-//     // Find the maximum values for crime rate and unemployment rate in the filtered data
-//     const maxCrimeRate = d3.max(filteredData, d => d[selectedCrime]);
-//     const maxUnemploymentRate = d3.max(filteredData, d => d.Unemployment_Rate);
-
-//     console.log('Max Crime Rate:', maxCrimeRate);
-//     console.log('Max Unemployment Rate:', maxUnemploymentRate);
-  
-//     // Scale the color based on the maximum values
-//     const colorScale = d3.scaleLinear()
-//       .domain([0, maxCrimeRate, maxUnemploymentRate])
-//       .range(['white', 'red', 'blue']); // Adjust colors as needed
-
-//     console.log('Color Scale:', colorScale); // Log the color scale
-  
-//     filteredData.forEach(entry => {
-//       const population = entry.Population;
-//       const crimeRate = entry[selectedCrime];
-//       const unemploymentRate = entry.Unemployment_Rate;
-  
-//       // Calculate the combined intensity based on both crime rate and unemployment rate
-//       const combinedIntensity = (crimeRate + unemploymentRate) / 2;
-
-//       console.log('Entry:', entry);
-//       console.log('Combined Intensity:', combinedIntensity);
-  
-//       // Create a circle marker for each data point
-//       const circle = L.circleMarker([entry.latitude, entry.longitude], {
-//         radius: Math.sqrt(population) * 0.02,
-//         color: 'black', // Border color
-//         fillColor: colorScale(combinedIntensity),
-//         fillOpacity: 0.8,
-//       });
-  
-//       // Bind a popup with information
-//       circle.bindPopup(`
-//         <strong>${entry.state_abbr}</strong><br>
-//         Population: ${population}<br>
-//         ${selectedCrime} Rate: ${crimeRate}<br>
-//         Unemployment Rate: ${unemploymentRate}
-//       `);
-  
-//       circle.addTo(map);
-//     });
-// }
