@@ -100,7 +100,9 @@ function updateMapForCrimeType(selectedCrimeType) {
       const stateData = transformedDataGlobal[stateAbbreviation];
       if (stateData && stateData[selectedCrimeType]) {
         const crimeData = stateData[selectedCrimeType];
-        layer.bindPopup(`${feature.properties.name}: Pearson R = ${crimeData.Pearson_r}, P-value = ${crimeData.p_value}`);
+        const formattedPearsonR = parseFloat(crimeData.Pearson_r).toFixed(2);
+        const formattedPValue = parseFloat(crimeData.p_value).toFixed(2);
+        layer.bindPopup(`<strong>${feature.properties.name}</strong><br> Pearson R: ${formattedPearsonR}<br> P-value: ${formattedPValue}`);
       } else {
         console.log(`Data for ${selectedCrimeType} in ${stateAbbreviation} is undefined.`);
       }
