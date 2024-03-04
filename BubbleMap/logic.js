@@ -135,8 +135,8 @@ filteredData.forEach(entry => {
     const combinedScore = crimeRate / maxCrimeRate;
 
     // Format crime rate with commas and round to two decimal places with percentage symbol
-const formattedCrimeRate = (crimeRate / 100).toLocaleString('en-US', {
-  style: 'percent',
+const formattedCrimeRate = (crimeRate).toLocaleString('en-US', {
+  //style: 'percent',
   minimumFractionDigits: 2,
   maximumFractionDigits: 2
 });
