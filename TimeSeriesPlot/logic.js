@@ -70,8 +70,8 @@ const availableWidth = window.innerWidth - margin.left - margin.right;
 const availableHeight = window.innerHeight - margin.top - margin.bottom;
 
 // Calculate a reasonable width and height based on the available space
-const width = Math.min(availableWidth, 1500); // Adjust the maximum width as needed
-const height = Math.min(availableHeight, 600); // Adjust the maximum height as needed
+const width = Math.min(availableWidth, 2000); // Adjust the maximum width as needed
+const height = Math.min(availableHeight, 1000); // Adjust the maximum height as needed
 
 
   const svg = d3.select('#timeSeriesChart')
